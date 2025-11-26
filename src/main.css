@@ -1,0 +1,10 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* 确保 HTML 和 body 占满屏幕高度 */
+}
+
+#root {
+    height: 100%; /* 确保 React 的根节点占满屏幕高度 */
+}
