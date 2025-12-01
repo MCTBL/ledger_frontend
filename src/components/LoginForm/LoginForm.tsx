@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import "./LoginForm.css"; // 引入样式文件
+import { useLocation, useNavigate } from "react-router-dom";
+import "./LoginForm.css";
 
 function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
@@ -11,18 +14,21 @@ function LoginForm() {
     setError("");
 
     const formData = new FormData(ev.currentTarget);
-    const username = formData.get("username");
-    const password = formData.get("password");
+    const username = String(formData.get("username") || "");
+    const password = String(formData.get("password") || "");
 
-    // 模拟登录逻辑
+    // 模拟登录
     setTimeout(() => {
       setLoading(false);
       if (username === "admin" && password === "password") {
-        alert("登录成功！");
+        localStorage.setItem("auth_token", "demo-token");
+        // 登录前想去的页面（如果有），否则跳首页
+        const redirectTo = (location.state)?.from?.pathname || "/app";
+        navigate(redirectTo, { replace: true });
       } else {
         setError("用户名或密码错误");
       }
-    }, 1000);
+    }, 600);
   };
 
   return (
