@@ -2,7 +2,7 @@ import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 
-import LoginPage from "../layouts/LoginPage";
+import LoginPage from "./LoginPage";
 import RequireAuth from "../routes/RequireAuth";
 import HomePage from "./HomePage";
 import ReportsPage from "./ReportsPage";
