@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../css/LoginPage.css"; // 引入页面样式
 
@@ -30,6 +30,15 @@ function LoginPage() {
             }
         }, 600);
     };
+
+    useEffect(() => {
+        const authed = !!localStorage.getItem("auth_token");
+        if (authed) {
+            const redirectTo = location.state?.from?.pathname || "/app";
+            navigate(redirectTo, { replace: true });
+        }
+    });
+
     return (
         <div className="login-page">
             <div className="login-container">
@@ -38,21 +47,11 @@ function LoginPage() {
                     {error && <div className="error-message">{error}</div>}
                     <div className="form-group">
                         <label htmlFor="username">用户名</label>
-                        <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            required
-                        />
+                        <input type="text" id="username" name="username" required />
                     </div>
                     <div className="form-group">
                         <label htmlFor="password">密码</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            required
-                        />
+                        <input type="password" id="password" name="password" required />
                     </div>
                     <button type="submit" disabled={loading} id="login-button">
                         {loading ? "登录中..." : "登录"}

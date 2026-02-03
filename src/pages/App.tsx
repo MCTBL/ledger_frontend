@@ -2,10 +2,10 @@ import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 
-import LoginPage from "./LoginPage";
+import PieReports from "../components/PieReports";
 import RequireAuth from "../routes/RequireAuth";
 import HomePage from "./HomePage";
-import ReportsPage from "./ReportsPage";
+import LoginPage from "./LoginPage";
 import SettingsPage from "./SettingsPage";
 
 const App: React.FC = () => {
@@ -16,7 +16,7 @@ const App: React.FC = () => {
             <Route path="/login" element={<LoginPage />} />
             {/* 受保护的主框架及其子页面 */}
             <Route
-                path="/app"
+                path="app"
                 element={
                     <RequireAuth>
                         <MainLayout />
@@ -24,7 +24,9 @@ const App: React.FC = () => {
                 }
             >
                 <Route index element={<HomePage />} />
-                <Route path="reports" element={<ReportsPage />} />
+                <Route path="reports">
+                    <Route path="pie" element={<PieReports />} />
+                </Route>
                 <Route path="settings" element={<SettingsPage />} />
             </Route>
             {/* 兜底 */}
