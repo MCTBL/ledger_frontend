@@ -42,3 +42,7 @@ export const pieOptions = {
         // ...pieSeries,
     ],
 };
+
+export const static_data = {
+    server: "http://localhost:9090",
+};
