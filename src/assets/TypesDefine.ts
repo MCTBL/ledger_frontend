@@ -10,6 +10,7 @@ export type Bill = {
 export type calendarData = {
     categoryNameList: string[];
     dateMap: Record<string, Record<string, number>>;
+    dateList: string[];
 };
 
 export type Category = {

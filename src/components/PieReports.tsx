@@ -63,7 +63,7 @@ export default function PieReports() {
                         });
                     });
                     calendarPieDatas.push(
-                        PieSeriesData(`pie-${date}`, date, 26, eachDayPieData),
+                        PieSeriesData(`pie-${date}`, date, 30, eachDayPieData),
                     );
                 }
 

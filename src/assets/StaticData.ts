@@ -1,7 +1,7 @@
 export const PieSeriesData = (
     id: string,
     center: string,
-    radius: number = 26,
+    radius: number = 30,
     data: object[] = [],
 ) => ({
     type: "pie",
@@ -24,10 +24,11 @@ export const calendarAndPieOptions = (
     pieSeries: object[] = [],
     pieData: object[] = [],
 ) => ({
+    grid: [{ left: "55%", right: "5%", top: "5%", bottom: "55%" }],
     tooltip: {},
     legend: {
         data: legend,
-        bottom: 20,
+        bottom: "1%",
     },
     calendar: {
         top: "center",
@@ -36,8 +37,10 @@ export const calendarAndPieOptions = (
         orient: "vertical",
         cellSize: cellSize,
         yearLabel: {
-            show: true,
-            fontSize: 30,
+            show: false,
+        },
+        monthLabel: {
+            show: false,
         },
         dayLabel: {
             margin: 20,
@@ -53,9 +56,6 @@ export const calendarAndPieOptions = (
                 "周日",
             ],
         },
-        monthLabel: {
-            show: true,
-        },
         range: [selectedMonth],
     },
     series: [
@@ -64,24 +64,21 @@ export const calendarAndPieOptions = (
             type: "scatter",
             coordinateSystem: "calendar",
             symbolSize: 0,
-            label: {
-                show: true,
-                // formatter: function (params) {
-                //     return echarts.time.format(params.value[0], "{dd}", false);
-                // },
-                offset: [-cellSize[0] / 2 + 10, -cellSize[1] / 2 + 10],
-                fontSize: 12,
-            },
+            // label: {
+            //     show: true,
+            //     offset: [-cellSize[1] / 2 + 10, -cellSize[1] / 2 + 10],
+            //     fontSize: 12,
+            // },
             data: scatterData,
         },
         {
             type: "pie",
-            radius: "75%",
+            radius: "40%",
             data: pieData,
             tooltip: {
                 trigger: "item",
             },
-            center: ["75%", "50%"],
+            center: ["75%", "75%"],
             emphasis: {
                 itemStyle: {
                     shadowBlur: 10,
