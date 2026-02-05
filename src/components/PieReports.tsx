@@ -1,41 +1,91 @@
 import { DatePicker, Flex, Space } from "antd";
 import axios from "axios";
+import dayjs, { Dayjs } from "dayjs";
 import EChartsReact from "echarts-for-react";
 import { useEffect, useRef, useState } from "react";
-import { pieOptions, static_data } from "../assets/static_data";
+import {
+    calendarAndPieOptions,
+    pieOptions,
+    PieSeriesData,
+} from "../assets/StaticData";
+import { type calendarData, type Result } from "../assets/TypesDefine";
 
 export default function PieReports() {
-    // var [pieOpt, setPieOpt] = useState({ ...pieOptions });
+    const now: Dayjs = dayjs();
+    const isFetched = useRef(false);
 
-    const calendar = useRef<HTMLElement>(null);
-    const chartRef = useRef<EChartsReact>(null);
-
-    const [selectedMonth, setSelectedMonth] = useState<string>("2025-12");
+    const [selectedMonth, setSelectedMonth] = useState<string>(
+        now.format("YYYY-MM"),
+    );
+    const [calendarOpt, setCalendarOpt] = useState<object>({});
+    const [pieOpt, setPieOpt] = useState<object>({});
+    const [loaded, setLoaded] = useState<boolean>(false);
 
     const updateSelectedMonth = (month: string | string[]) => {
         if (Array.isArray(month)) {
             month = month[0];
         }
         setSelectedMonth(month);
+        isFetched.current = false;
     };
 
     useEffect(() => {
-        const month = selectedMonth.split("-")[1];
-        const year = selectedMonth.split("-")[0];
+        const month = selectedMonth!.split("-")[1];
+        const year = selectedMonth!.split("-")[0];
 
-        const api = axios.create({
-            baseURL: static_data.server,
-            withCredentials: true, // 跨域请求时发送cookies
-            timeout: 10000,
-        });
+        if (isFetched.current) return;
+        isFetched.current = true;
 
-        api.get(`/pie/1/${year}/${month}`).then((response) => {
-            if (chartRef.current) {
-                // chartRef.current.getEchartsInstance().setOption({});
+        axios.get(`/api/pie/1/${year}/${month}`).then((response) => {
+            const data = (response.data as Result<calendarData>)
+                .data as calendarData;
+
+            const pieData = data.categoryNameList.map((name) => ({
+                name,
+                value: 0,
+            }));
+
+            const scatterData: object[] = [];
+            const calendarPieDatas: object[] = [];
+            for (const entry of Object.keys(data.dateMap)) {
+                const [date, m] = [entry, data.dateMap[entry]];
+                let tempSum: number = 0;
+                Object.values(m).forEach((amount) => {
+                    tempSum += amount;
+                });
+                scatterData.push([date, tempSum.toFixed(2)]);
+
+                const eachDayPieData: object[] = [];
+                Object.keys(m).forEach((categoryName) => {
+                    pieData.find((item) => item.name === categoryName)!.value +=
+                        m[categoryName];
+                    eachDayPieData.push({
+                        name: categoryName,
+                        value: m[categoryName],
+                    });
+                });
+                calendarPieDatas.push(
+                    PieSeriesData(`pie-${date}`, date, 26, eachDayPieData),
+                );
             }
-            console.log(response.data);
+
+            const calendarOpt = calendarAndPieOptions(
+                [70, 70],
+                data.categoryNameList,
+                selectedMonth,
+                calendarPieDatas,
+                scatterData,
+            );
+            setCalendarOpt(calendarOpt);
+
+            const pieOpt = pieOptions(data.categoryNameList, pieData);
+            setPieOpt(pieOpt);
+
+            setLoaded(true);
         });
-    }, [calendar, selectedMonth]);
+
+        // return () => {};
+    }, [selectedMonth]);
 
     return (
         <Flex gap="middle" vertical style={{ height: "100%" }}>
@@ -43,16 +93,39 @@ export default function PieReports() {
                 <Flex flex={1} gap={"middle"}>
                     <h3>这里是饼图报表页面内容</h3>
                     <Space>
-                        <DatePicker onChange={(_, dateString) => updateSelectedMonth(dateString)} picker="month" />
+                        <DatePicker
+                            onChange={(_, dateString) =>
+                                updateSelectedMonth(dateString)
+                            }
+                            value={dayjs(selectedMonth)}
+                            picker="month"
+                        />
                     </Space>
                 </Flex>
-                <Flex flex={15} ref={calendar}>
-                    <EChartsReact option={{ ...pieOptions }} ref={chartRef} />
+                <Flex flex={15}>
+                    <Flex flex={1} align="center" justify="center">
+                        {loaded ? (
+                            <EChartsReact
+                                option={{ ...calendarOpt }}
+                                style={{ height: "100%", width: "100%" }}
+                                notMerge={true}
+                            />
+                        ) : null}
+                    </Flex>
+                    <Flex flex={1} align="center" justify="center">
+                        {loaded ? (
+                            <EChartsReact
+                                option={{ ...pieOpt }}
+                                style={{ height: "100%", width: "100%" }}
+                                notMerge={true}
+                            />
+                        ) : null}
+                    </Flex>
                 </Flex>
             </Flex>
-            <Flex flex={1}>
+            {/* <Flex flex={1}>
                 <Flex>这里是饼图报表页面内容</Flex>
-            </Flex>
+            </Flex> */}
         </Flex>
     );
 }
