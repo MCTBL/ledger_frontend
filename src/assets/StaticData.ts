@@ -1,9 +1,28 @@
+export const PieSeriesData = (
+    id: string,
+    center: string,
+    radius: number = 26,
+    data: object[] = [],
+) => ({
+    type: "pie",
+    id: id,
+    center: center,
+    radius: radius,
+    coordinateSystem: "calendar",
+    label: {
+        formatter: "{c}",
+        position: "inside",
+    },
+    data: data,
+});
+
 export const calendarAndPieOptions = (
-    cellSize: number[],
     legend: string[],
+    cellSize: number[],
     selectedMonth: string,
+    scatterData: object[],
     pieSeries: object[] = [],
-    scatterData: object[] = [],
+    pieData: object[] = [],
 ) => ({
     tooltip: {},
     legend: {
@@ -11,8 +30,9 @@ export const calendarAndPieOptions = (
         bottom: 20,
     },
     calendar: {
-        top: "middle",
-        left: "center",
+        top: "center",
+        left: "5%",
+        right: "55%",
         orient: "vertical",
         cellSize: cellSize,
         yearLabel: {
@@ -54,44 +74,14 @@ export const calendarAndPieOptions = (
             },
             data: scatterData,
         },
-        ...pieSeries,
-    ],
-});
-
-export const PieSeriesData = (
-    id: string,
-    center: string,
-    radius: number = 26,
-    data: object[] = [],
-) => ({
-    type: "pie",
-    id: id,
-    center: center,
-    radius: radius,
-    coordinateSystem: "calendar",
-    label: {
-        formatter: "{c}",
-        position: "inside",
-    },
-    data: data,
-});
-
-export const pieOptions = (legend: string[], pieData: object[] = []) => ({
-    title: {
-        show: false,
-    },
-    tooltip: {
-        trigger: "item",
-    },
-    legend: {
-        bottom: 20,
-        legend: legend,
-    },
-    series: [
         {
             type: "pie",
             radius: "75%",
             data: pieData,
+            tooltip: {
+                trigger: "item",
+            },
+            center: ["75%", "50%"],
             emphasis: {
                 itemStyle: {
                     shadowBlur: 10,
@@ -100,5 +90,6 @@ export const pieOptions = (legend: string[], pieData: object[] = []) => ({
                 },
             },
         },
+        ...pieSeries,
     ],
 });
