@@ -3,7 +3,11 @@ import axios from "axios";
 import dayjs, { Dayjs } from "dayjs";
 import EChartsReact from "echarts-for-react";
 import { useEffect, useRef, useState } from "react";
-import { calendarAndPieOptions, PieSeriesData } from "../assets/StaticData";
+import {
+    barSeriesData,
+    calendarAndPieOptions,
+    PieSeriesData,
+} from "../assets/StaticData";
 import { type calendarData, type Result } from "../assets/TypesDefine";
 
 export default function PieReports() {
@@ -25,11 +29,11 @@ export default function PieReports() {
     };
 
     useEffect(() => {
-        const month = selectedMonth!.split("-")[1];
-        const year = selectedMonth!.split("-")[0];
-
         if (isFetched.current) return;
         isFetched.current = true;
+
+        const month = selectedMonth!.split("-")[1];
+        const year = selectedMonth!.split("-")[0];
 
         axios
             .get(`/api/pie/1/${year}/${month}`)
@@ -37,29 +41,41 @@ export default function PieReports() {
                 const data = (response.data as Result<calendarData>)
                     .data as calendarData;
 
-                const pieData = data.categoryNameList.map((name) => ({
+                const dateList = data.dateList;
+                const categoryList = data.categoryNameList;
+
+                const pieData = categoryList.map((name) => ({
                     name,
                     value: 0,
                 }));
 
+                const barData = new Map(
+                    categoryList.map((name) => [name, [] as number[]]),
+                );
+
                 const scatterData: object[] = [];
                 const calendarPieDatas: object[] = [];
-                for (const entry of Object.keys(data.dateMap)) {
-                    const [date, m] = [entry, data.dateMap[entry]];
+                for (const date of dateList) {
+                    const oneDayBills = data.dateMap[date];
                     let tempSum: number = 0;
-                    Object.values(m).forEach((amount) => {
-                        tempSum += amount;
-                    });
+                    for (const cate of categoryList) {
+                        if (cate in oneDayBills) {
+                            barData.get(cate)!.push(oneDayBills[cate]);
+                            tempSum += oneDayBills[cate];
+                        } else {
+                            barData.get(cate)!.push(0);
+                        }
+                    }
                     scatterData.push([date, tempSum.toFixed(2)]);
 
                     const eachDayPieData: object[] = [];
-                    Object.keys(m).forEach((categoryName) => {
+                    Object.keys(oneDayBills).forEach((categoryName) => {
                         pieData.find(
                             (item) => item.name === categoryName,
-                        )!.value += m[categoryName];
+                        )!.value += oneDayBills[categoryName];
                         eachDayPieData.push({
                             name: categoryName,
-                            value: m[categoryName],
+                            value: oneDayBills[categoryName],
                         });
                     });
                     calendarPieDatas.push(
@@ -67,14 +83,27 @@ export default function PieReports() {
                     );
                 }
 
+                const barSeries: object[] = [];
+                barData.forEach((v, k) => {
+                    barSeries.push(
+                        barSeriesData(
+                            k,
+                            v.map((n) => ({ name: k, value: n })),
+                        ),
+                    );
+                });
+
                 const options = calendarAndPieOptions(
-                    data.categoryNameList,
+                    categoryList,
                     [70, 70],
                     selectedMonth,
                     scatterData,
                     calendarPieDatas,
                     pieData,
+                    dateList,
+                    barSeries,
                 );
+                console.log(options);
                 setChartOptions(options);
 
                 setLoaded(true);
@@ -84,6 +113,8 @@ export default function PieReports() {
                     [],
                     [70, 70],
                     selectedMonth,
+                    [],
+                    [],
                     [],
                     [],
                     [],

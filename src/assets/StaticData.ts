@@ -14,18 +14,46 @@ export const PieSeriesData = (
         position: "inside",
     },
     data: data,
+    tooltip: {},
+});
+
+export const barSeriesData = (name: string, data: object[]) => ({
+    name: name,
+    type: "bar",
+    stack: "total",
+    label: {
+        show: true,
+    },
+    emphasis: {
+        focus: "series",
+    },
+    data: data,
 });
 
 export const calendarAndPieOptions = (
     legend: string[],
     cellSize: number[],
     selectedMonth: string,
-    scatterData: object[],
+    scatterData: object[] = [],
     pieSeries: object[] = [],
     pieData: object[] = [],
+    dateList: string[] = [],
+    barSeries: object[] = [],
 ) => ({
     grid: [{ left: "55%", right: "5%", top: "5%", bottom: "55%" }],
-    tooltip: {},
+    xAxis: {
+        gridIndex: 0,
+        data: dateList,
+    },
+    yAxis: {
+        gridIndex: 0,
+    },
+    tooltip: {
+        trigger: "axis",
+        axisPointer: {
+            type: "shadow",
+        },
+    },
     legend: {
         data: legend,
         bottom: "1%",
@@ -64,11 +92,11 @@ export const calendarAndPieOptions = (
             type: "scatter",
             coordinateSystem: "calendar",
             symbolSize: 0,
-            // label: {
-            //     show: true,
-            //     offset: [-cellSize[1] / 2 + 10, -cellSize[1] / 2 + 10],
-            //     fontSize: 12,
-            // },
+            label: {
+                show: true,
+                offset: [-cellSize[1] / 2 + 10, -cellSize[1] / 2 + 10],
+                fontSize: 12,
+            },
             data: scatterData,
         },
         {
@@ -88,5 +116,6 @@ export const calendarAndPieOptions = (
             },
         },
         ...pieSeries,
+        ...barSeries,
     ],
 });
