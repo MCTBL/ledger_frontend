@@ -24,10 +24,8 @@ export const barSeriesData = (name: string, data: object[]) => ({
     label: {
         show: true,
     },
-    emphasis: {
-        focus: "series",
-    },
     data: data,
+    legendHoverLink: true,
 });
 
 export const calendarAndPieOptions = (
@@ -37,26 +35,16 @@ export const calendarAndPieOptions = (
     scatterData: object[] = [],
     pieSeries: object[] = [],
     pieData: object[] = [],
-    dateList: string[] = [],
-    barSeries: object[] = [],
 ) => ({
-    grid: [{ left: "55%", right: "5%", top: "5%", bottom: "55%" }],
-    xAxis: {
-        gridIndex: 0,
-        data: dateList,
-    },
-    yAxis: {
-        gridIndex: 0,
+    legend: {
+        data: legend,
+        bottom: "1%",
     },
     tooltip: {
         trigger: "axis",
         axisPointer: {
             type: "shadow",
         },
-    },
-    legend: {
-        data: legend,
-        bottom: "1%",
     },
     calendar: {
         top: "center",
@@ -101,12 +89,15 @@ export const calendarAndPieOptions = (
         },
         {
             type: "pie",
-            radius: "40%",
+            radius: "50%",
             data: pieData,
             tooltip: {
                 trigger: "item",
             },
-            center: ["75%", "75%"],
+            label: {
+                formatter: "{b}:{c}元",
+            },
+            center: ["75%", "50%"],
             emphasis: {
                 itemStyle: {
                     shadowBlur: 10,
@@ -116,6 +107,5 @@ export const calendarAndPieOptions = (
             },
         },
         ...pieSeries,
-        ...barSeries,
     ],
 });

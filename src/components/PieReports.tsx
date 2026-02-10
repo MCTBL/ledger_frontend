@@ -100,10 +100,7 @@ export default function PieReports() {
                     scatterData,
                     calendarPieDatas,
                     pieData,
-                    dateList,
-                    barSeries,
                 );
-                console.log(options);
                 setChartOptions(options);
 
                 setLoaded(true);
@@ -113,8 +110,6 @@ export default function PieReports() {
                     [],
                     [70, 70],
                     selectedMonth,
-                    [],
-                    [],
                     [],
                     [],
                     [],
@@ -129,8 +124,8 @@ export default function PieReports() {
     return (
         <Flex gap="middle" vertical style={{ height: "100%" }}>
             <Flex flex={1} vertical>
-                <Flex flex={1} gap={"middle"}>
-                    <h3>这里是饼图报表页面内容</h3>
+                <Flex flex={1} gap={"large"} align="center" justify="left">
+                    <h3>每月各类开销占比</h3>
                     <Space>
                         <DatePicker
                             onChange={(_, dateString) =>
