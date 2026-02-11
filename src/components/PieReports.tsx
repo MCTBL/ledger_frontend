@@ -3,11 +3,7 @@ import axios from "axios";
 import dayjs, { Dayjs } from "dayjs";
 import EChartsReact from "echarts-for-react";
 import { useEffect, useRef, useState } from "react";
-import {
-    barSeriesData,
-    calendarAndPieOptions,
-    PieSeriesData,
-} from "../assets/StaticData";
+import { calendarAndPieOptions, PieSeriesData } from "../assets/StaticData";
 import { type calendarData, type Result } from "../assets/TypesDefine";
 
 export default function PieReports() {
@@ -41,57 +37,42 @@ export default function PieReports() {
                 const data = (response.data as Result<calendarData>)
                     .data as calendarData;
 
-                const dateList = data.dateList;
+                const dateMap = data.dateMap;
                 const categoryList = data.categoryNameList;
 
                 const pieData = categoryList.map((name) => ({
                     name,
                     value: 0,
                 }));
-
-                const barData = new Map(
-                    categoryList.map((name) => [name, [] as number[]]),
-                );
-
                 const scatterData: object[] = [];
                 const calendarPieDatas: object[] = [];
-                for (const date of dateList) {
-                    const oneDayBills = data.dateMap[date];
-                    let tempSum: number = 0;
-                    for (const cate of categoryList) {
-                        if (cate in oneDayBills) {
-                            barData.get(cate)!.push(oneDayBills[cate]);
-                            tempSum += oneDayBills[cate];
+
+                for (const entry of Object.entries(dateMap)) {
+                    const date = entry[0];
+                    const eachDay = entry[1];
+                    const tempList: (string | number)[] = [date];
+                    const dayHasCategories = Object.keys(eachDay);
+                    const eachDayPieData: object[] = [];
+                    let eachDayConsume = 0;
+                    for (const t of categoryList) {
+                        if (dayHasCategories.includes(t)) {
+                            tempList.push(eachDay[t]);
+                            pieData.find((item) => item.name === t)!.value +=
+                                eachDay[t];
+                            eachDayPieData.push({
+                                name: t,
+                                value: eachDay[t],
+                            });
+                            eachDayConsume += eachDay[t];
                         } else {
-                            barData.get(cate)!.push(0);
+                            tempList.push(0);
                         }
                     }
-                    scatterData.push([date, tempSum.toFixed(2)]);
-
-                    const eachDayPieData: object[] = [];
-                    Object.keys(oneDayBills).forEach((categoryName) => {
-                        pieData.find(
-                            (item) => item.name === categoryName,
-                        )!.value += oneDayBills[categoryName];
-                        eachDayPieData.push({
-                            name: categoryName,
-                            value: oneDayBills[categoryName],
-                        });
-                    });
+                    scatterData.push([data, eachDayConsume]);
                     calendarPieDatas.push(
                         PieSeriesData(`pie-${date}`, date, 30, eachDayPieData),
                     );
                 }
-
-                const barSeries: object[] = [];
-                barData.forEach((v, k) => {
-                    barSeries.push(
-                        barSeriesData(
-                            k,
-                            v.map((n) => ({ name: k, value: n })),
-                        ),
-                    );
-                });
 
                 const options = calendarAndPieOptions(
                     categoryList,
