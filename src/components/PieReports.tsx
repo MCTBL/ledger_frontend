@@ -50,13 +50,11 @@ export default function PieReports() {
                 for (const entry of Object.entries(dateMap)) {
                     const date = entry[0];
                     const eachDay = entry[1];
-                    const tempList: (string | number)[] = [date];
                     const dayHasCategories = Object.keys(eachDay);
                     const eachDayPieData: object[] = [];
                     let eachDayConsume = 0;
                     for (const t of categoryList) {
                         if (dayHasCategories.includes(t)) {
-                            tempList.push(eachDay[t]);
                             pieData.find((item) => item.name === t)!.value +=
                                 eachDay[t];
                             eachDayPieData.push({
@@ -64,8 +62,6 @@ export default function PieReports() {
                                 value: eachDay[t],
                             });
                             eachDayConsume += eachDay[t];
-                        } else {
-                            tempList.push(0);
                         }
                     }
                     scatterData.push([data, eachDayConsume]);
