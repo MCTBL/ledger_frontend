@@ -7,10 +7,17 @@ export type Bill = {
     billDescription: string;
 };
 
-export type calendarData = {
+export type pieChartData = {
     categoryNameList: string[];
     dateMap: Record<string, Record<string, number>>;
     dateList: string[];
+};
+
+export type barChartData = {
+    categoryNameList: string[];
+    dateMap: Record<string, Record<string, number>>;
+    dateList: string[];
+    YMList: string[];
 };
 
 export type Category = {

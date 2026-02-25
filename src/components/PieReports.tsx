@@ -4,7 +4,7 @@ import dayjs, { Dayjs } from "dayjs";
 import EChartsReact from "echarts-for-react";
 import { useEffect, useRef, useState } from "react";
 import { calendarAndPieOptions, PieSeriesData } from "../assets/StaticData";
-import { type calendarData, type Result } from "../assets/TypesDefine";
+import { type pieChartData, type Result } from "../assets/TypesDefine";
 
 export default function PieReports() {
     const now: Dayjs = dayjs();
@@ -32,10 +32,10 @@ export default function PieReports() {
         const year = selectedMonth!.split("-")[0];
 
         axios
-            .get(`/api/pie/1/${year}/${month}`)
+            .get(`/api/data/pie/1/${year}/${month}`)
             .then((response) => {
-                const data = (response.data as Result<calendarData>)
-                    .data as calendarData;
+                const data = (response.data as Result<pieChartData>)
+                    .data as pieChartData;
 
                 const dateMap = data.dateMap;
                 const categoryList = data.categoryNameList;
@@ -102,7 +102,7 @@ export default function PieReports() {
         <Flex gap="middle" vertical style={{ height: "100%" }}>
             <Flex flex={1} vertical>
                 <Flex flex={1} gap={"large"} align="center" justify="left">
-                    <h3>每月各类开销占比</h3>
+                    <h3>各类开销占比可视化</h3>
                     <Space>
                         <DatePicker
                             onChange={(_, dateString) =>
@@ -120,7 +120,9 @@ export default function PieReports() {
                             style={{ height: "100%", width: "100%" }}
                             notMerge={true}
                         />
-                    ) : null}
+                    ) : (
+                        <div>加载中...</div>
+                    )}
                 </Flex>
             </Flex>
         </Flex>

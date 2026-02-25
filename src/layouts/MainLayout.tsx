@@ -1,4 +1,10 @@
-import { FileTextOutlined, HomeOutlined, LogoutOutlined, PieChartOutlined, SettingOutlined } from "@ant-design/icons";
+import {
+    FileTextOutlined,
+    HomeOutlined,
+    LogoutOutlined,
+    PieChartOutlined,
+    SettingOutlined,
+} from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -23,10 +29,17 @@ export default function MainLayout() {
 
     return (
         <Layout style={{ minHeight: "100vh" }}>
-            <Header style={{ display: "flex", alignItems: "center", color: "#fff" }}>
+            <Header
+                style={{ display: "flex", alignItems: "center", color: "#fff" }}
+            >
                 <div style={{ fontWeight: 600 }}>Ledger App</div>
                 <div style={{ marginLeft: "auto" }}>
-                    <Button type="text" icon={<LogoutOutlined />} onClick={handleLogout} style={{ color: "#fff" }}>
+                    <Button
+                        type="text"
+                        icon={<LogoutOutlined />}
+                        onClick={handleLogout}
+                        style={{ color: "#fff" }}
+                    >
                         退出
                     </Button>
                 </div>
@@ -35,7 +48,11 @@ export default function MainLayout() {
             <Layout>
                 <Sider
                     width={220}
-                    style={{ background: colorBgContainer, display: "flex", flexDirection: "column" }}
+                    style={{
+                        background: colorBgContainer,
+                        display: "flex",
+                        flexDirection: "column",
+                    }}
                     collapsible
                     collapsed={collapsed}
                     onCollapse={(value) => setCollapsed(value)}
@@ -45,14 +62,41 @@ export default function MainLayout() {
                         selectedKeys={[selectedKey]}
                         style={{ height: "100%", borderInlineEnd: 0 }}
                         items={[
-                            { key: "app", icon: <HomeOutlined />, label: <Link to="/app">首页</Link> },
+                            {
+                                key: "app",
+                                icon: <HomeOutlined />,
+                                label: <Link to="/app">首页</Link>,
+                            },
                             {
                                 key: "reports",
                                 icon: <FileTextOutlined />,
                                 label: "报表",
-                                children: [{ key: "pie", icon: <PieChartOutlined />, label: <Link to="/app/reports/pie">饼图报表</Link> }],
+                                children: [
+                                    {
+                                        key: "pie",
+                                        icon: <PieChartOutlined />,
+                                        label: (
+                                            <Link to="/app/reports/pie">
+                                                饼图可视化
+                                            </Link>
+                                        ),
+                                    },
+                                    {
+                                        key: "line",
+                                        icon: <FileTextOutlined />,
+                                        label: (
+                                            <Link to="/app/reports/bar">
+                                                柱状图可视化
+                                            </Link>
+                                        ),
+                                    },
+                                ],
                             },
-                            { key: "settings", icon: <SettingOutlined />, label: <Link to="/app/settings">设置</Link> },
+                            {
+                                key: "settings",
+                                icon: <SettingOutlined />,
+                                label: <Link to="/app/settings">设置</Link>,
+                            },
                         ]}
                     />
                 </Sider>

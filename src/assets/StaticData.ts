@@ -17,7 +17,7 @@ export const PieSeriesData = (
     tooltip: {},
 });
 
-export const barSeriesData = (name: string, data: object[]) => ({
+export const barSeriesData = (name: string, data: number[]) => ({
     name: name,
     type: "bar",
     stack: "total",
@@ -26,6 +26,9 @@ export const barSeriesData = (name: string, data: object[]) => ({
     },
     data: data,
     legendHoverLink: true,
+    emphasis: {
+        focus: "series",
+    },
 });
 
 export const calendarAndPieOptions = (
@@ -108,4 +111,23 @@ export const calendarAndPieOptions = (
         },
         ...pieSeries,
     ],
+});
+
+export const barOptions = (xData: string[] = [], barSeries: object[] = []) => ({
+    tooltip: {
+        trigger: "axis",
+        axisPointer: {
+            // Use axis to trigger tooltip
+            type: "shadow", // 'shadow' as default; can also be 'line' or 'shadow'
+        },
+    },
+    legend: {},
+    xAxis: {
+        type: "category",
+        data: xData,
+    },
+    yAxis: {
+        type: "value",
+    },
+    series: barSeries,
 });
