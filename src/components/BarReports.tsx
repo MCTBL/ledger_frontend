@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import EChartsReact from "echarts-for-react";
 import { useEffect, useRef, useState } from "react";
 import { barOptions, barSeriesData } from "../assets/StaticData";
-import type { barChartData, Result } from "../assets/TypesDefine";
+import type { barChartData, Result } from "../types/defines";
 
 export default function BarReports() {
     const now: Dayjs = dayjs();
@@ -40,7 +40,7 @@ export default function BarReports() {
                 const categoryList = data.categoryNameList;
                 const YMList = data.YMList;
 
-                const cateMap = new Map();
+                const cateMap = new Map<string, number[]>();
                 categoryList.forEach((cate) => {
                     cateMap.set(cate, []);
                 });
@@ -50,21 +50,18 @@ export default function BarReports() {
                     const dayHasCategories = Object.keys(eachDay);
                     for (const key of cateMap.keys()) {
                         if (dayHasCategories.includes(key)) {
-                            cateMap.get(key).push(eachDay[key]);
+                            cateMap.get(key)!.push(eachDay[key]);
                         } else {
-                            cateMap.get(key).push(0);
+                            cateMap.get(key)!.push(0);
                         }
                     }
                 }
 
                 const barSeries: object[] = [];
 
-                for (const entry of cateMap.entries()) {
-                    barSeries.push(barSeriesData(entry[0], entry[1]));
-                }
+                cateMap.forEach((v, k) => barSeries.push(barSeriesData(k, v)));
 
-                const bOpts = barOptions(YMList, barSeries);
-                setChartOptions(bOpts);
+                setChartOptions(barOptions(YMList, barSeries));
 
                 setLoaded(true);
             })
@@ -80,7 +77,7 @@ export default function BarReports() {
         <Flex gap="middle" vertical style={{ height: "100%" }}>
             <Flex flex={1} vertical>
                 <Flex flex={1} gap={"large"} align="center" justify="left">
-                    <h3>每月各类开销占比</h3>
+                    <h3>每月各类支出占比</h3>
                     <Space>
                         <DatePicker.RangePicker
                             onChange={(_, dateString) =>

@@ -1,4 +1,5 @@
 import {
+    BarChartOutlined,
     FileTextOutlined,
     HomeOutlined,
     LogoutOutlined,
@@ -8,6 +9,8 @@ import {
 import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { STATIC_FIELDS } from "../assets/StaticData";
+import { useAuth } from "../context/AuthContext";
 
 const { Header, Content, Sider } = Layout;
 
@@ -17,13 +20,17 @@ export default function MainLayout() {
     } = theme.useToken();
     const location = useLocation();
     const navigate = useNavigate();
-    const [collapsed, setCollapsed] = useState(false);
+    const [collapsed, setCollapsed] = useState(
+        window.outerWidth < 768 ? true : false,
+    );
+
+    const { user } = useAuth();
 
     // 根据路由高亮菜单
     const selectedKey = location.pathname.split("/").slice(-1)[0];
 
     const handleLogout = () => {
-        localStorage.removeItem("auth_token");
+        localStorage.removeItem(STATIC_FIELDS.auth_token);
         navigate("/login", { replace: true });
     };
 
@@ -34,6 +41,7 @@ export default function MainLayout() {
             >
                 <div style={{ fontWeight: 600 }}>Ledger App</div>
                 <div style={{ marginLeft: "auto" }}>
+                    {user && user.userName ? user.userName : "未登录"}
                     <Button
                         type="text"
                         icon={<LogoutOutlined />}
@@ -70,23 +78,23 @@ export default function MainLayout() {
                             {
                                 key: "reports",
                                 icon: <FileTextOutlined />,
-                                label: "报表",
+                                label: "可视化",
                                 children: [
                                     {
                                         key: "pie",
                                         icon: <PieChartOutlined />,
                                         label: (
                                             <Link to="/app/reports/pie">
-                                                饼图可视化
+                                                支出饼图
                                             </Link>
                                         ),
                                     },
                                     {
-                                        key: "line",
-                                        icon: <FileTextOutlined />,
+                                        key: "bar",
+                                        icon: <BarChartOutlined />,
                                         label: (
                                             <Link to="/app/reports/bar">
-                                                柱状图可视化
+                                                支出柱状图
                                             </Link>
                                         ),
                                     },

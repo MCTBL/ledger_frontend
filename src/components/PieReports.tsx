@@ -4,7 +4,7 @@ import dayjs, { Dayjs } from "dayjs";
 import EChartsReact from "echarts-for-react";
 import { useEffect, useRef, useState } from "react";
 import { calendarAndPieOptions, PieSeriesData } from "../assets/StaticData";
-import { type pieChartData, type Result } from "../assets/TypesDefine";
+import type { pieChartData, Result } from "../types/defines";
 
 export default function PieReports() {
     const now: Dayjs = dayjs();
@@ -102,7 +102,7 @@ export default function PieReports() {
         <Flex gap="middle" vertical style={{ height: "100%" }}>
             <Flex flex={1} vertical>
                 <Flex flex={1} gap={"large"} align="center" justify="left">
-                    <h3>各类开销占比可视化</h3>
+                    <h3>支出占比可视化</h3>
                     <Space>
                         <DatePicker
                             onChange={(_, dateString) =>
