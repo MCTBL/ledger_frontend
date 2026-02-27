@@ -4,7 +4,7 @@ import axios from "../api/axios";
 import { STATIC_FIELDS } from "../assets/StaticData";
 import { useAuth } from "../context/AuthContext";
 import "../css/LoginPage.css"; // 引入页面样式
-import type { LoginRequest, LoginResponse } from "../types/defines";
+import type { LoginRequest, LoginResponse, Result } from "../types/defines";
 
 function LoginPage() {
     const [loading, setLoading] = useState(false);
@@ -24,28 +24,36 @@ function LoginPage() {
 
         const request: LoginRequest = { username, password };
         await axios
-            .post<LoginResponse>("/auth/signin", request)
+            .post<Result<LoginResponse>>("/api/login", request)
             .then((res) => res.data)
-            .then((data) => {
-                const { token, id, userName, role } = data;
-                login({ id, userName, passwordHash: "", role }, token);
+            .then((data: Result<LoginResponse>) => {
+                if (data.code !== 200) {
+                    throw new Error(data.message);
+                }
+                const id = data.data.userId;
+                const userName = data.data.userName;
+                const token = data.data.token;
+                login({ id, userName, passwordHash: "", role: 0 }, token);
             })
-            .catch(() => {
-                setError("用户名或密码错误");
+            .catch((e: Error) => {
+                setError(e.message);
+            })
+            .finally(() => {
+                setLoading(false);
             });
 
         // 模拟登录
-        setTimeout(() => {
-            setLoading(false);
-            if (username === "admin" && password === "password") {
-                localStorage.setItem(STATIC_FIELDS.auth_token, "demo-token");
-                // 登录前想去的页面（如果有），否则跳首页
-                const redirectTo = location.state?.from?.pathname || "/app";
-                navigate(redirectTo, { replace: true });
-            } else {
-                setError("用户名或密码错误");
-            }
-        }, 600);
+        // setTimeout(() => {
+        //     setLoading(false);
+        //     if (username === "admin" && password === "password") {
+        //         localStorage.setItem(STATIC_FIELDS.auth_token, "demo-token");
+        //         // 登录前想去的页面（如果有），否则跳首页
+        //         const redirectTo = location.state?.from?.pathname || "/app";
+        //         navigate(redirectTo, { replace: true });
+        //     } else {
+        //         setError("用户名或密码错误");
+        //     }
+        // }, 600);
     };
 
     useEffect(() => {

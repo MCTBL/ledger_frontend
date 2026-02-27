@@ -3,15 +3,6 @@ export interface LoginRequest {
     password: string;
 }
 
-export interface LoginResponse {
-    token: string;
-    type: string;
-    id: number;
-    role: number;
-    userName: string;
-    passwordHash: string;
-}
-
 export interface SignupRequest {
     username: string;
     password: string;
@@ -61,4 +52,10 @@ export interface Result<T> {
     message: string;
     data: T;
     timestamp: number;
+}
+
+export interface LoginResponse {
+    token: string;
+    userId: number;
+    userName: string;
 }

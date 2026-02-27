@@ -1,10 +1,11 @@
 import { DatePicker, Flex, Space } from "antd";
-import axios from "axios";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import EChartsReact from "echarts-for-react";
 import { useEffect, useRef, useState } from "react";
+import axios from "../api/axios";
 import { barOptions, barSeriesData } from "../assets/StaticData";
+import { useAuth } from "../context/AuthContext";
 import type { barChartData, Result } from "../types/defines";
 
 export default function BarReports() {
@@ -23,6 +24,8 @@ export default function BarReports() {
         isFetched.current = false;
     };
 
+    const { user } = useAuth();
+
     useEffect(() => {
         if (isFetched.current) return;
         isFetched.current = true;
@@ -31,7 +34,7 @@ export default function BarReports() {
         const end = selectedMonthRange[1];
 
         axios
-            .get(`/api/data/bar/1/${start}-01~${end}-01`)
+            .get(`/api/data/bar/${user?.id}/${start}-01~${end}-01`)
             .then((response) => {
                 const data = (response.data as Result<barChartData>)
                     .data as barChartData;
@@ -71,7 +74,7 @@ export default function BarReports() {
             });
 
         // return () => {};
-    }, [selectedMonthRange]);
+    }, [selectedMonthRange, user?.id]);
 
     return (
         <Flex gap="middle" vertical style={{ height: "100%" }}>

@@ -1,9 +1,14 @@
 import { DatePicker, Flex, Space } from "antd";
-import axios from "axios";
 import dayjs, { Dayjs } from "dayjs";
 import EChartsReact from "echarts-for-react";
 import { useEffect, useRef, useState } from "react";
-import { calendarAndPieOptions, PieSeriesData } from "../assets/StaticData";
+import axios from "../api/axios";
+import {
+    calendarAndPieOptions,
+    PieSeriesData,
+    STATIC_FIELDS,
+} from "../assets/StaticData";
+import { useAuth } from "../context/AuthContext";
 import type { pieChartData, Result } from "../types/defines";
 
 export default function PieReports() {
@@ -24,6 +29,8 @@ export default function PieReports() {
         isFetched.current = false;
     };
 
+    const { user } = useAuth();
+
     useEffect(() => {
         if (isFetched.current) return;
         isFetched.current = true;
@@ -31,8 +38,9 @@ export default function PieReports() {
         const month = selectedMonth!.split("-")[1];
         const year = selectedMonth!.split("-")[0];
 
+        console.log(localStorage.getItem(STATIC_FIELDS.auth_token));
         axios
-            .get(`/api/data/pie/1/${year}/${month}`)
+            .get(`/api/data/pie/${user?.id}/${year}/${month}`)
             .then((response) => {
                 const data = (response.data as Result<pieChartData>)
                     .data as pieChartData;
@@ -96,7 +104,7 @@ export default function PieReports() {
             });
 
         // return () => {};
-    }, [selectedMonth]);
+    }, [selectedMonth, user?.id]);
 
     return (
         <Flex gap="middle" vertical style={{ height: "100%" }}>

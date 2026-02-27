@@ -134,4 +134,5 @@ export const barOptions = (xData: string[] = [], barSeries: object[] = []) => ({
 
 export const STATIC_FIELDS = {
     auth_token: "token",
+    auth_user: "auth_user",
 };
