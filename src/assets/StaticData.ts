@@ -1,3 +1,10 @@
+import type { waterfallParam } from "../types/defines";
+
+export const STATIC_FIELDS = {
+    auth_token: "token",
+    auth_user: "auth_user",
+};
+
 export const PieSeriesData = (
     id: string,
     center: string,
@@ -132,7 +139,79 @@ export const barOptions = (xData: string[] = [], barSeries: object[] = []) => ({
     series: barSeries,
 });
 
-export const STATIC_FIELDS = {
-    auth_token: "token",
-    auth_user: "auth_user",
-};
+export const waterfallOptions = (
+    dateList: string[] = [],
+    placeHolderData: (number | string)[] = [],
+    incomeData: (number | string)[] = [],
+    expenseData: (number | string)[] = [],
+) => ({
+    tooltip: {
+        trigger: "axis",
+        axisPointer: {
+            type: "shadow",
+        },
+        formatter: function (params: waterfallParam[]) {
+            let tar;
+            if (params[1] && params[1].value !== 0) {
+                tar = params[1];
+            } else {
+                tar = params[2];
+            }
+            return (
+                tar && tar.name + "<br/>" + tar.seriesName + " : " + tar.value
+            );
+        },
+    },
+    legend: {
+        data: ["支出", "收入"],
+    },
+    xAxis: {
+        type: "category",
+        data: dateList,
+    },
+    yAxis: {
+        type: "value",
+    },
+    series: [
+        {
+            name: "Placeholder",
+            type: "bar",
+            stack: "Total",
+            stackStrategy: "all",
+            silent: true,
+            itemStyle: {
+                borderColor: "transparent",
+                color: "transparent",
+            },
+            emphasis: {
+                itemStyle: {
+                    borderColor: "transparent",
+                    color: "transparent",
+                },
+            },
+            data: placeHolderData,
+        },
+        {
+            name: "收入",
+            type: "bar",
+            stack: "Total",
+            stackStrategy: "all",
+            label: {
+                show: true,
+                position: "top",
+            },
+            data: incomeData,
+        },
+        {
+            name: "支出",
+            type: "bar",
+            stack: "Total",
+            stackStrategy: "all",
+            label: {
+                show: true,
+                position: "bottom",
+            },
+            data: expenseData,
+        },
+    ],
+});

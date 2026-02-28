@@ -1,20 +1,19 @@
 import { DatePicker, Flex, Space } from "antd";
-import type { Dayjs } from "dayjs";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import EChartsReact from "echarts-for-react";
 import { useEffect, useRef, useState } from "react";
 import axios from "../api/axios";
-import { barOptions, barSeriesData } from "../assets/StaticData";
+import { waterfallOptions } from "../assets/StaticData";
 import { useAuth } from "../hooks/useAuth";
-import type { barChartData, Result } from "../types/defines";
+import type { Result, waterfallChartData } from "../types/defines";
 
-export default function BarReports() {
+export default function WaterfallReports() {
     const now: Dayjs = dayjs();
     const isFetched = useRef(false);
 
     const [selectedMonthRange, setSelectedMonthRange] = useState<string[]>([
-        now.format("YYYY-MM"),
-        now.format("YYYY-MM"),
+        now.format("YYYY-MM-DD"),
+        now.format("YYYY-MM-DD"),
     ]);
     const [chartOptions, setChartOptions] = useState<object>({});
     const [loaded, setLoaded] = useState<boolean>(false);
@@ -34,53 +33,52 @@ export default function BarReports() {
         const end = selectedMonthRange[1];
 
         axios
-            .get(`/api/data/bar/${user?.id}/${start}-01~${end}-01/1`)
+            .get(`/api/data/waterfall/${user?.id}/${start}~${end}`)
             .then((response) => {
-                const data = (response.data as Result<barChartData>)
-                    .data as barChartData;
+                const data = (response.data as Result<waterfallChartData>)
+                    .data as waterfallChartData;
 
-                const dateMap = data.dateMap;
-                const categoryList = data.categoryNameList;
-                const YMList = data.YMList;
+                const dateList = data.YMDList;
+                const eachDayBill = data.eachDayBill;
 
-                const cateMap = new Map<string, number[]>();
-                categoryList.forEach((cate) => {
-                    cateMap.set(cate, []);
-                });
-
-                for (const date of Object.values(YMList)) {
-                    const eachDay = dateMap[date];
-                    const dayHasCategories = Object.keys(eachDay);
-                    for (const key of cateMap.keys()) {
-                        if (dayHasCategories.includes(key)) {
-                            cateMap.get(key)!.push(eachDay[key]);
-                        } else {
-                            cateMap.get(key)!.push(0);
-                        }
+                const incomeData: (number | string)[] = [];
+                const expenseData: (number | string)[] = [];
+                const placeHolderData: (number | string)[] = [];
+                let deposit = 0;
+                for (const date of dateList) {
+                    const dayBill = eachDayBill[date];
+                    if (dayBill > 0) {
+                        incomeData.push(dayBill.toFixed(2));
+                        expenseData.push(0);
+                    } else {
+                        incomeData.push(0);
+                        expenseData.push(dayBill.toFixed(2));
                     }
+                    placeHolderData.push(deposit);
+                    deposit += dayBill;
                 }
+                const opts = waterfallOptions(
+                    dateList,
+                    placeHolderData,
+                    incomeData,
+                    expenseData,
+                );
 
-                const barSeries: object[] = [];
-
-                cateMap.forEach((v, k) => barSeries.push(barSeriesData(k, v)));
-
-                setChartOptions(barOptions(YMList, barSeries));
-
+                console.log(opts);
+                setChartOptions(opts);
                 setLoaded(true);
             })
             .catch((error) => {
-                setChartOptions(barOptions());
+                setChartOptions(waterfallOptions());
                 console.log(error);
             });
-
-        // return () => {};
     }, [selectedMonthRange, user?.id]);
 
     return (
         <Flex gap="middle" vertical style={{ height: "100%" }}>
             <Flex flex={1} vertical>
                 <Flex flex={1} gap={"large"} align="center" justify="left">
-                    <h3>每月各类支出占比</h3>
+                    <h3>收入支出瀑布图</h3>
                     <Space>
                         <DatePicker.RangePicker
                             onChange={(_, dateString) =>
@@ -90,7 +88,7 @@ export default function BarReports() {
                                 dayjs(selectedMonthRange[0]),
                                 dayjs(selectedMonthRange[1]),
                             ]}
-                            picker="month"
+                            picker="date"
                         />
                     </Space>
                 </Flex>

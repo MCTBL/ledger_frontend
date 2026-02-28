@@ -1,6 +1,7 @@
 import {
     BarChartOutlined,
     FileTextOutlined,
+    FundOutlined,
     HomeOutlined,
     LogoutOutlined,
     PieChartOutlined,
@@ -81,22 +82,48 @@ export default function MainLayout() {
                                 label: "可视化",
                                 children: [
                                     {
-                                        key: "pie",
-                                        icon: <PieChartOutlined />,
-                                        label: (
-                                            <Link to="/app/reports/pie">
-                                                支出饼图
-                                            </Link>
-                                        ),
+                                        key: "out",
+                                        label: "支出可视化",
+                                        children: [
+                                            {
+                                                key: "pie",
+                                                icon: <PieChartOutlined />,
+                                                label: (
+                                                    <Link to="/app/reports/pie">
+                                                        支出饼图
+                                                    </Link>
+                                                ),
+                                            },
+                                            {
+                                                key: "bar",
+                                                icon: <BarChartOutlined />,
+                                                label: (
+                                                    <Link to="/app/reports/bar">
+                                                        支出柱状图
+                                                    </Link>
+                                                ),
+                                            },
+                                        ],
                                     },
                                     {
-                                        key: "bar",
-                                        icon: <BarChartOutlined />,
-                                        label: (
-                                            <Link to="/app/reports/bar">
-                                                支出柱状图
-                                            </Link>
-                                        ),
+                                        key: "in",
+                                        label: "收入可视化",
+                                        children: [],
+                                    },
+                                    {
+                                        key: "inAndOut",
+                                        label: "收入支出可视化",
+                                        children: [
+                                            {
+                                                key: "waterfall",
+                                                icon: <FundOutlined />,
+                                                label: (
+                                                    <Link to="/app/reports/waterfall">
+                                                        流水瀑布图
+                                                    </Link>
+                                                ),
+                                            },
+                                        ],
                                     },
                                 ],
                             },

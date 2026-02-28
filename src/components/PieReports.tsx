@@ -40,7 +40,7 @@ export default function PieReports() {
 
         console.log(localStorage.getItem(STATIC_FIELDS.auth_token));
         axios
-            .get(`/api/data/pie/${user?.id}/${year}/${month}`)
+            .get(`/api/data/pie/${user?.id}/${year}/${month}/1`)
             .then((response) => {
                 const data = (response.data as Result<pieChartData>)
                     .data as pieChartData;

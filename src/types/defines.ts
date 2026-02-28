@@ -17,6 +17,7 @@ export interface Bill {
     userId: number;
     categoryId: number;
     amount: number;
+    isConsume: boolean;
     billDate: Date;
     billDescription: string;
 }
@@ -32,6 +33,11 @@ export interface barChartData {
     dateMap: Record<string, Record<string, number>>;
     dateList: string[];
     YMList: string[];
+}
+
+export interface waterfallChartData {
+    eachDayBill: Record<string, number>;
+    YMDList: string[];
 }
 
 export interface Category {
@@ -58,4 +64,10 @@ export interface LoginResponse {
     token: string;
     userId: number;
     userName: string;
+}
+
+export interface waterfallParam {
+    value: number | string;
+    name: string;
+    seriesName: string;
 }

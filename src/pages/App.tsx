@@ -4,6 +4,7 @@ import MainLayout from "../layouts/MainLayout";
 
 import BarReports from "../components/BarReports";
 import PieReports from "../components/PieReports";
+import WaterfallReports from "../components/WaterfallReports";
 import RequireAuth from "../routes/RequireAuth";
 import HomePage from "./HomePage";
 import LoginPage from "./LoginPage";
@@ -26,6 +27,7 @@ const App: React.FC = () => {
                 <Route path="reports">
                     <Route path="pie" element={<PieReports />} />
                     <Route path="bar" element={<BarReports />} />
+                    <Route path="waterfall" element={<WaterfallReports />} />
                 </Route>
                 <Route path="settings" element={<SettingsPage />} />
             </Route>
