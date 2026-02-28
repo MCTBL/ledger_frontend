@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 import { STATIC_FIELDS } from "../assets/StaticData";
-import { useAuth } from "../context/AuthContext";
 import "../css/LoginPage.css"; // 引入页面样式
+import { useAuth } from "../hooks/useAuth";
 import type { LoginRequest, LoginResponse, Result } from "../types/defines";
 
 function LoginPage() {
@@ -41,19 +41,6 @@ function LoginPage() {
             .finally(() => {
                 setLoading(false);
             });
-
-        // 模拟登录
-        // setTimeout(() => {
-        //     setLoading(false);
-        //     if (username === "admin" && password === "password") {
-        //         localStorage.setItem(STATIC_FIELDS.auth_token, "demo-token");
-        //         // 登录前想去的页面（如果有），否则跳首页
-        //         const redirectTo = location.state?.from?.pathname || "/app";
-        //         navigate(redirectTo, { replace: true });
-        //     } else {
-        //         setError("用户名或密码错误");
-        //     }
-        // }, 600);
     };
 
     useEffect(() => {

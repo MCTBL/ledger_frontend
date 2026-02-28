@@ -10,7 +10,7 @@ import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { STATIC_FIELDS } from "../assets/StaticData";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 
 const { Header, Content, Sider } = Layout;
 

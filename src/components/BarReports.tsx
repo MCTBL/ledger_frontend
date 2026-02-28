@@ -5,7 +5,7 @@ import EChartsReact from "echarts-for-react";
 import { useEffect, useRef, useState } from "react";
 import axios from "../api/axios";
 import { barOptions, barSeriesData } from "../assets/StaticData";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import type { barChartData, Result } from "../types/defines";
 
 export default function BarReports() {

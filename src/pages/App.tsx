@@ -12,10 +12,8 @@ import SettingsPage from "./SettingsPage";
 const App: React.FC = () => {
     return (
         <Routes>
-            {/* 默认进入登录页 */}
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<LoginPage />} />
-            {/* 受保护的主框架及其子页面 */}
             <Route
                 path="app"
                 element={
@@ -31,7 +29,7 @@ const App: React.FC = () => {
                 </Route>
                 <Route path="settings" element={<SettingsPage />} />
             </Route>
-            {/* 兜底 */}
+
             <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
     );

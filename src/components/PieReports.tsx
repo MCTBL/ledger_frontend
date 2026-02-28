@@ -8,7 +8,7 @@ import {
     PieSeriesData,
     STATIC_FIELDS,
 } from "../assets/StaticData";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import type { pieChartData, Result } from "../types/defines";
 
 export default function PieReports() {
