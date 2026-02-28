@@ -30,13 +30,17 @@ export default function WaterfallReports() {
         isFetched.current = true;
 
         const start = selectedMonthRange[0];
-        const end = selectedMonthRange[1];
+        let end = selectedMonthRange[1];
+        if (end === start) {
+            end = dayjs(end).add(1, "day").format("YYYY-MM-DD");
+        }
 
         axios
             .get(`/api/data/waterfall/${user?.id}/${start}~${end}`)
             .then((response) => {
                 const data = (response.data as Result<waterfallChartData>)
                     .data as waterfallChartData;
+                console.log(data);
 
                 const dateList = data.YMDList;
                 const eachDayBill = data.eachDayBill;
@@ -47,15 +51,10 @@ export default function WaterfallReports() {
                 let deposit = 0;
                 for (const date of dateList) {
                     const dayBill = eachDayBill[date];
-                    if (dayBill > 0) {
-                        incomeData.push(dayBill.toFixed(2));
-                        expenseData.push(0);
-                    } else {
-                        incomeData.push(0);
-                        expenseData.push(dayBill.toFixed(2));
-                    }
+                    incomeData.push(dayBill[0]);
+                    expenseData.push(dayBill[1]);
                     placeHolderData.push(deposit);
-                    deposit += dayBill;
+                    deposit += dayBill[0] + dayBill[1];
                 }
                 const opts = waterfallOptions(
                     dateList,
@@ -64,7 +63,6 @@ export default function WaterfallReports() {
                     expenseData,
                 );
 
-                console.log(opts);
                 setChartOptions(opts);
                 setLoaded(true);
             })

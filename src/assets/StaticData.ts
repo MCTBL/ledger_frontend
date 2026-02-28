@@ -151,15 +151,26 @@ export const waterfallOptions = (
             type: "shadow",
         },
         formatter: function (params: waterfallParam[]) {
-            let tar;
-            if (params[1] && params[1].value !== 0) {
-                tar = params[1];
-            } else {
-                tar = params[2];
-            }
-            return (
-                tar && tar.name + "<br/>" + tar.seriesName + " : " + tar.value
-            );
+            let outToolTip = params[0].name + "<br/>";
+            outToolTip +=
+                params[1].seriesName +
+                " : " +
+                Number(params[1].value).toFixed(2) +
+                "<br/>";
+            outToolTip +=
+                params[2].seriesName +
+                " : " +
+                Number(params[2].value).toFixed(2) +
+                "<br/>";
+            outToolTip +=
+                "结余 : " +
+                (
+                    Number(params[0].value) +
+                    Number(params[1].value) +
+                    Number(params[2].value)
+                ).toFixed(2) +
+                "<br/>";
+            return outToolTip;
         },
     },
     legend: {
@@ -199,6 +210,11 @@ export const waterfallOptions = (
             label: {
                 show: true,
                 position: "top",
+                formatter: function (p: waterfallParam) {
+                    return Number(p.value) === 0
+                        ? ""
+                        : Number(p.value).toFixed(2);
+                },
             },
             data: incomeData,
         },
@@ -210,6 +226,11 @@ export const waterfallOptions = (
             label: {
                 show: true,
                 position: "bottom",
+                formatter: function (p: waterfallParam) {
+                    return Number(p.value) === 0
+                        ? ""
+                        : Number(p.value).toFixed(2);
+                },
             },
             data: expenseData,
         },

@@ -36,7 +36,7 @@ export interface barChartData {
 }
 
 export interface waterfallChartData {
-    eachDayBill: Record<string, number>;
+    eachDayBill: Record<string, number[]>;
     YMDList: string[];
 }
 
