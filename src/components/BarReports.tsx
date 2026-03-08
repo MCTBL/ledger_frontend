@@ -12,10 +12,7 @@ export default function BarReports() {
     const now: Dayjs = dayjs();
     const isFetched = useRef(false);
 
-    const [selectedMonthRange, setSelectedMonthRange] = useState<string[]>([
-        now.format("YYYY-MM"),
-        now.format("YYYY-MM"),
-    ]);
+    const [selectedMonthRange, setSelectedMonthRange] = useState<string[]>([now.format("YYYY-MM"), now.format("YYYY-MM")]);
     const [chartOptions, setChartOptions] = useState<object>({});
     const [loaded, setLoaded] = useState<boolean>(false);
 
@@ -34,10 +31,9 @@ export default function BarReports() {
         const end = selectedMonthRange[1];
 
         axios
-            .get(`/api/data/bar/${user?.id}/${start}-01~${end}-01/1`)
+            .get(`/api/data/bar/${user!.id}/${start}-01~${end}-01/1`)
             .then((response) => {
-                const data = (response.data as Result<barChartData>)
-                    .data as barChartData;
+                const data = (response.data as Result<barChartData>).data as barChartData;
 
                 const dateMap = data.dateMap;
                 const categoryList = data.categoryNameList;
@@ -62,7 +58,14 @@ export default function BarReports() {
 
                 const barSeries: object[] = [];
 
-                cateMap.forEach((v, k) => barSeries.push(barSeriesData(k, v)));
+                cateMap.forEach((v, k) => {
+                    barSeries.push(
+                        barSeriesData(
+                            k,
+                            v.map((item) => item.toFixed(2)),
+                        ),
+                    );
+                });
 
                 setChartOptions(barOptions(YMList, barSeries));
 
@@ -74,7 +77,7 @@ export default function BarReports() {
             });
 
         // return () => {};
-    }, [selectedMonthRange, user?.id]);
+    }, [selectedMonthRange, user]);
 
     return (
         <Flex gap="middle" vertical style={{ height: "100%" }}>
@@ -83,24 +86,15 @@ export default function BarReports() {
                     <h3>每月各类支出占比</h3>
                     <Space>
                         <DatePicker.RangePicker
-                            onChange={(_, dateString) =>
-                                updateSelectedMonth(dateString)
-                            }
-                            value={[
-                                dayjs(selectedMonthRange[0]),
-                                dayjs(selectedMonthRange[1]),
-                            ]}
+                            onChange={(_, dateString) => updateSelectedMonth(dateString)}
+                            value={[dayjs(selectedMonthRange[0]), dayjs(selectedMonthRange[1])]}
                             picker="month"
                         />
                     </Space>
                 </Flex>
                 <Flex flex={15} align="center" justify="center">
                     {loaded ? (
-                        <EChartsReact
-                            option={{ ...chartOptions }}
-                            style={{ height: "100%", width: "100%" }}
-                            notMerge={true}
-                        />
+                        <EChartsReact option={{ ...chartOptions }} style={{ height: "100%", width: "100%" }} notMerge={true} />
                     ) : (
                         <div>加载中...</div>
                     )}

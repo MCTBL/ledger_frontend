@@ -1,12 +1,4 @@
-import {
-    BarChartOutlined,
-    FileTextOutlined,
-    FundOutlined,
-    HomeOutlined,
-    LogoutOutlined,
-    PieChartOutlined,
-    SettingOutlined,
-} from "@ant-design/icons";
+import { BarChartOutlined, FileTextOutlined, FundOutlined, HomeOutlined, LogoutOutlined, PieChartOutlined, SettingOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -21,9 +13,7 @@ export default function MainLayout() {
     } = theme.useToken();
     const location = useLocation();
     const navigate = useNavigate();
-    const [collapsed, setCollapsed] = useState(
-        window.outerWidth < 768 ? true : false,
-    );
+    const [collapsed, setCollapsed] = useState(window.outerWidth < 768 ? true : false);
 
     const { user } = useAuth();
 
@@ -37,18 +27,11 @@ export default function MainLayout() {
 
     return (
         <Layout style={{ minHeight: "100vh" }}>
-            <Header
-                style={{ display: "flex", alignItems: "center", color: "#fff" }}
-            >
+            <Header style={{ display: "flex", alignItems: "center", color: "#fff" }}>
                 <div style={{ fontWeight: 600 }}>Ledger App</div>
                 <div style={{ marginLeft: "auto" }}>
                     {user && user.userName ? user.userName : "未登录"}
-                    <Button
-                        type="text"
-                        icon={<LogoutOutlined />}
-                        onClick={handleLogout}
-                        style={{ color: "#fff" }}
-                    >
+                    <Button type="text" icon={<LogoutOutlined />} onClick={handleLogout} style={{ color: "#fff" }}>
                         退出
                     </Button>
                 </div>
@@ -77,6 +60,11 @@ export default function MainLayout() {
                                 label: <Link to="/app">首页</Link>,
                             },
                             {
+                                key: "bills",
+                                icon: <FileTextOutlined />,
+                                label: <Link to="/app/bills">账单列表</Link>,
+                            },
+                            {
                                 key: "reports",
                                 icon: <FileTextOutlined />,
                                 label: "可视化",
@@ -88,20 +76,12 @@ export default function MainLayout() {
                                             {
                                                 key: "pie",
                                                 icon: <PieChartOutlined />,
-                                                label: (
-                                                    <Link to="/app/reports/pie">
-                                                        支出饼图
-                                                    </Link>
-                                                ),
+                                                label: <Link to="/app/reports/pie">支出饼图</Link>,
                                             },
                                             {
                                                 key: "bar",
                                                 icon: <BarChartOutlined />,
-                                                label: (
-                                                    <Link to="/app/reports/bar">
-                                                        支出柱状图
-                                                    </Link>
-                                                ),
+                                                label: <Link to="/app/reports/bar">支出柱状图</Link>,
                                             },
                                         ],
                                     },
@@ -117,11 +97,7 @@ export default function MainLayout() {
                                             {
                                                 key: "waterfall",
                                                 icon: <FundOutlined />,
-                                                label: (
-                                                    <Link to="/app/reports/waterfall">
-                                                        流水瀑布图
-                                                    </Link>
-                                                ),
+                                                label: <Link to="/app/reports/waterfall">流水瀑布图</Link>,
                                             },
                                         ],
                                     },
@@ -139,7 +115,7 @@ export default function MainLayout() {
                 <Layout style={{ padding: 24 }}>
                     <Content
                         style={{
-                            padding: 24,
+                            padding: "0 24px 0 24px",
                             margin: 0,
                             minHeight: 360,
                             background: colorBgContainer,

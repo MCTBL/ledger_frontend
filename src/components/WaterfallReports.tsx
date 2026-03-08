@@ -11,10 +11,7 @@ export default function WaterfallReports() {
     const now: Dayjs = dayjs();
     const isFetched = useRef(false);
 
-    const [selectedMonthRange, setSelectedMonthRange] = useState<string[]>([
-        now.format("YYYY-MM-DD"),
-        now.format("YYYY-MM-DD"),
-    ]);
+    const [selectedMonthRange, setSelectedMonthRange] = useState<string[]>([now.format("YYYY-MM-DD"), now.format("YYYY-MM-DD")]);
     const [chartOptions, setChartOptions] = useState<object>({});
     const [loaded, setLoaded] = useState<boolean>(false);
 
@@ -36,11 +33,9 @@ export default function WaterfallReports() {
         }
 
         axios
-            .get(`/api/data/waterfall/${user?.id}/${start}~${end}`)
+            .get(`/api/data/waterfall/${user!.id}/${start}~${end}`)
             .then((response) => {
-                const data = (response.data as Result<waterfallChartData>)
-                    .data as waterfallChartData;
-                console.log(data);
+                const data = (response.data as Result<waterfallChartData>).data as waterfallChartData;
 
                 const dateList = data.YMDList;
                 const eachDayBill = data.eachDayBill;
@@ -56,12 +51,7 @@ export default function WaterfallReports() {
                     placeHolderData.push(deposit);
                     deposit += dayBill[0] + dayBill[1];
                 }
-                const opts = waterfallOptions(
-                    dateList,
-                    placeHolderData,
-                    incomeData,
-                    expenseData,
-                );
+                const opts = waterfallOptions(dateList, placeHolderData, incomeData, expenseData);
 
                 setChartOptions(opts);
                 setLoaded(true);
@@ -70,7 +60,7 @@ export default function WaterfallReports() {
                 setChartOptions(waterfallOptions());
                 console.log(error);
             });
-    }, [selectedMonthRange, user?.id]);
+    }, [selectedMonthRange, user]);
 
     return (
         <Flex gap="middle" vertical style={{ height: "100%" }}>
@@ -79,24 +69,15 @@ export default function WaterfallReports() {
                     <h3>收入支出瀑布图</h3>
                     <Space>
                         <DatePicker.RangePicker
-                            onChange={(_, dateString) =>
-                                updateSelectedMonth(dateString)
-                            }
-                            value={[
-                                dayjs(selectedMonthRange[0]),
-                                dayjs(selectedMonthRange[1]),
-                            ]}
+                            onChange={(_, dateString) => updateSelectedMonth(dateString)}
+                            value={[dayjs(selectedMonthRange[0]), dayjs(selectedMonthRange[1])]}
                             picker="date"
                         />
                     </Space>
                 </Flex>
                 <Flex flex={15} align="center" justify="center">
                     {loaded ? (
-                        <EChartsReact
-                            option={{ ...chartOptions }}
-                            style={{ height: "100%", width: "100%" }}
-                            notMerge={true}
-                        />
+                        <EChartsReact option={{ ...chartOptions }} style={{ height: "100%", width: "100%" }} notMerge={true} />
                     ) : (
                         <div>加载中...</div>
                     )}

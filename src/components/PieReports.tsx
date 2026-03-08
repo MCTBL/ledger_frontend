@@ -3,11 +3,7 @@ import dayjs, { Dayjs } from "dayjs";
 import EChartsReact from "echarts-for-react";
 import { useEffect, useRef, useState } from "react";
 import axios from "../api/axios";
-import {
-    calendarAndPieOptions,
-    PieSeriesData,
-    STATIC_FIELDS,
-} from "../assets/StaticData";
+import { calendarAndPieOptions, PieSeriesData } from "../assets/StaticData";
 import { useAuth } from "../hooks/useAuth";
 import type { pieChartData, Result } from "../types/defines";
 
@@ -15,9 +11,7 @@ export default function PieReports() {
     const now: Dayjs = dayjs();
     const isFetched = useRef(false);
 
-    const [selectedMonth, setSelectedMonth] = useState<string>(
-        now.format("YYYY-MM"),
-    );
+    const [selectedMonth, setSelectedMonth] = useState<string>(now.format("YYYY-MM"));
     const [chartOptions, setChartOptions] = useState<object>({});
     const [loaded, setLoaded] = useState<boolean>(false);
 
@@ -38,12 +32,10 @@ export default function PieReports() {
         const month = selectedMonth!.split("-")[1];
         const year = selectedMonth!.split("-")[0];
 
-        console.log(localStorage.getItem(STATIC_FIELDS.auth_token));
         axios
-            .get(`/api/data/pie/${user?.id}/${year}/${month}/1`)
+            .get(`/api/data/pie/${user!.id}/${year}/${month}/1`)
             .then((response) => {
-                const data = (response.data as Result<pieChartData>)
-                    .data as pieChartData;
+                const data = (response.data as Result<pieChartData>).data as pieChartData;
 
                 const dateMap = data.dateMap;
                 const categoryList = data.categoryNameList;
@@ -63,48 +55,32 @@ export default function PieReports() {
                     let eachDayConsume = 0;
                     for (const t of categoryList) {
                         if (dayHasCategories.includes(t)) {
-                            pieData.find((item) => item.name === t)!.value +=
-                                eachDay[t];
+                            pieData.find((item) => item.name === t)!.value += eachDay[t];
                             eachDayPieData.push({
                                 name: t,
-                                value: eachDay[t],
+                                value: eachDay[t].toFixed(2),
                             });
                             eachDayConsume += eachDay[t];
                         }
                     }
                     scatterData.push([data, eachDayConsume]);
-                    calendarPieDatas.push(
-                        PieSeriesData(`pie-${date}`, date, 30, eachDayPieData),
-                    );
+                    calendarPieDatas.push(PieSeriesData(`pie-${date}`, date, 30, eachDayPieData));
                 }
 
-                const options = calendarAndPieOptions(
-                    categoryList,
-                    [70, 70],
-                    selectedMonth,
-                    scatterData,
-                    calendarPieDatas,
-                    pieData,
-                );
+                pieData.forEach((item) => (item.value = parseFloat(item.value.toFixed(2))));
+                const options = calendarAndPieOptions(categoryList, [70, 70], selectedMonth, scatterData, calendarPieDatas, pieData);
                 setChartOptions(options);
 
                 setLoaded(true);
             })
             .catch((error) => {
-                const options = calendarAndPieOptions(
-                    [],
-                    [70, 70],
-                    selectedMonth,
-                    [],
-                    [],
-                    [],
-                );
+                const options = calendarAndPieOptions([], [70, 70], selectedMonth, [], [], []);
                 setChartOptions(options);
                 console.log(error);
             });
 
         // return () => {};
-    }, [selectedMonth, user?.id]);
+    }, [selectedMonth, user]);
 
     return (
         <Flex gap="middle" vertical style={{ height: "100%" }}>
@@ -112,22 +88,12 @@ export default function PieReports() {
                 <Flex flex={1} gap={"large"} align="center" justify="left">
                     <h3>支出占比可视化</h3>
                     <Space>
-                        <DatePicker
-                            onChange={(_, dateString) =>
-                                updateSelectedMonth(dateString)
-                            }
-                            value={dayjs(selectedMonth)}
-                            picker="month"
-                        />
+                        <DatePicker onChange={(_, dateString) => updateSelectedMonth(dateString)} value={dayjs(selectedMonth)} picker="month" />
                     </Space>
                 </Flex>
                 <Flex flex={15} align="center" justify="center">
                     {loaded ? (
-                        <EChartsReact
-                            option={{ ...chartOptions }}
-                            style={{ height: "100%", width: "100%" }}
-                            notMerge={true}
-                        />
+                        <EChartsReact option={{ ...chartOptions }} style={{ height: "100%", width: "100%" }} notMerge={true} />
                     ) : (
                         <div>加载中...</div>
                     )}

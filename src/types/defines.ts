@@ -17,8 +17,8 @@ export interface Bill {
     userId: number;
     categoryId: number;
     amount: number;
-    isConsume: boolean;
-    billDate: Date;
+    consume: boolean;
+    billDate: string;
     billDescription: string;
 }
 
@@ -33,6 +33,11 @@ export interface barChartData {
     dateMap: Record<string, Record<string, number>>;
     dateList: string[];
     YMList: string[];
+}
+
+export interface getBillsData {
+    bills: Bill[];
+    categories: Category[];
 }
 
 export interface waterfallChartData {
@@ -70,4 +75,13 @@ export interface waterfallParam {
     value: number | string;
     name: string;
     seriesName: string;
+}
+
+export interface billTableData {
+    key: React.Key;
+    id: number;
+    date: string;
+    category: string;
+    amount: number;
+    description: string;
 }
