@@ -5,7 +5,12 @@ export const STATIC_FIELDS = {
     auth_user: "auth_user",
 };
 
-export const PieSeriesData = (id: string, center: string, radius: number = 30, data: object[] = []) => ({
+export const PieSeriesData = (
+    id: string,
+    center: string,
+    radius: number = 30,
+    data: object[] = [],
+) => ({
     type: "pie",
     id: id,
     center: center,
@@ -66,7 +71,16 @@ export const calendarAndPieOptions = (
         dayLabel: {
             margin: 20,
             firstDay: 1,
-            nameMap: ["周日", "周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+            nameMap: [
+                "周日",
+                "周一",
+                "周二",
+                "周三",
+                "周四",
+                "周五",
+                "周六",
+                "周日",
+            ],
         },
         range: [selectedMonth],
     },
@@ -110,8 +124,7 @@ export const barOptions = (xData: string[] = [], barSeries: object[] = []) => ({
     tooltip: {
         trigger: "axis",
         axisPointer: {
-            // Use axis to trigger tooltip
-            type: "shadow", // 'shadow' as default; can also be 'line' or 'shadow'
+            type: "shadow",
         },
     },
     legend: {},
@@ -138,9 +151,24 @@ export const waterfallOptions = (
         },
         formatter: function (params: waterfallParam[]) {
             let outToolTip = params[0].name + "<br/>";
-            outToolTip += params[1].seriesName + " : " + Number(params[1].value).toFixed(2) + "<br/>";
-            outToolTip += params[2].seriesName + " : " + Number(params[2].value).toFixed(2) + "<br/>";
-            outToolTip += "结余 : " + (Number(params[0].value) + Number(params[1].value) + Number(params[2].value)).toFixed(2) + "<br/>";
+            outToolTip +=
+                params[1].seriesName +
+                " : " +
+                Number(params[1].value).toFixed(2) +
+                "<br/>";
+            outToolTip +=
+                params[2].seriesName +
+                " : " +
+                Number(params[2].value).toFixed(2) +
+                "<br/>";
+            outToolTip +=
+                "结余 : " +
+                (
+                    Number(params[0].value) +
+                    Number(params[1].value) +
+                    Number(params[2].value)
+                ).toFixed(2) +
+                "<br/>";
             return outToolTip;
         },
     },
@@ -182,7 +210,9 @@ export const waterfallOptions = (
                 show: true,
                 position: "top",
                 formatter: function (p: waterfallParam) {
-                    return Number(p.value) === 0 ? "" : Number(p.value).toFixed(2);
+                    return Number(p.value) === 0
+                        ? ""
+                        : Number(p.value).toFixed(2);
                 },
             },
             data: incomeData,
@@ -196,7 +226,9 @@ export const waterfallOptions = (
                 show: true,
                 position: "bottom",
                 formatter: function (p: waterfallParam) {
-                    return Number(p.value) === 0 ? "" : Number(p.value).toFixed(2);
+                    return Number(p.value) === 0
+                        ? ""
+                        : Number(p.value).toFixed(2);
                 },
             },
             data: expenseData,
