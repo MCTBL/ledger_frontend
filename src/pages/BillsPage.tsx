@@ -120,11 +120,10 @@ export default function BillsPage() {
         // TODO
     };
 
-    const getOptions = () => {
-        return allCategory.map((v) => {
+    const getOptions = () =>
+        allCategory.map((v) => {
             return { value: v };
         });
-    };
 
     const handleUpdataDataChange = (
         which: string,
