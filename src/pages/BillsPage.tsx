@@ -1,12 +1,18 @@
 import {
+    AutoComplete,
     Button,
+    DatePicker,
     Flex,
+    Input,
+    InputNumber,
+    Modal,
     Popconfirm,
     Space,
     Table,
     type TableColumnsType,
 } from "antd";
-import { useEffect, useRef, useState } from "react";
+import dayjs from "dayjs";
+import { useEffect, useRef, useState, type SyntheticEvent } from "react";
 import axios from "../api/axios";
 import { useAuth } from "../hooks/useAuth";
 import type {
@@ -22,6 +28,11 @@ export default function BillsPage() {
     const [cateFilters, setCateFilters] = useState<
         { text: string; value: string }[]
     >([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [updateData, setUpdataData] = useState({} as billTableData);
+    const [allCategory, setAllCategory] = useState<string[]>([]);
+    const [editOrNew, setEditOrNew] = useState<boolean>(false);
+
     const columns: TableColumnsType<billTableData> = [
         {
             title: "日期",
@@ -87,12 +98,54 @@ export default function BillsPage() {
         },
     ];
 
-    const openEditModal = (record: billTableData) => {
-        // 打开编辑模态框，预填充 record 数据
+    const openEditModal = (record: billTableData, isEdit: boolean = true) => {
+        setIsModalOpen(true);
+        setUpdataData(record);
+        setEditOrNew(isEdit);
     };
 
+    function closeEditModal() {
+        setIsModalOpen(false);
+        setUpdataData({} as billTableData);
+    }
+
     const handleDelete = (id: number) => {
-        // 调用 API 删除账单项，刷新表格数据
+        // TODO
+        console.log(id);
+    };
+
+    const handleSubmit = (temp: SyntheticEvent) => {
+        temp.nativeEvent.preventDefault();
+        console.log(updateData);
+        // TODO
+    };
+
+    const getOptions = () => {
+        return allCategory.map((v) => {
+            return { value: v };
+        });
+    };
+
+    const handleUpdataDataChange = (
+        which: string,
+        newValue: string | number | null,
+    ) => {
+        const newState = { ...updateData };
+        switch (which) {
+            case "date":
+                newState.date = newValue as string;
+                break;
+            case "category":
+                newState.category = newValue as string;
+                break;
+            case "amount":
+                newState.amount = newValue as number | 0;
+                break;
+            case "description":
+                newState.description = newValue as string;
+                break;
+        }
+        setUpdataData(newState);
     };
 
     const { user } = useAuth();
@@ -113,6 +166,11 @@ export default function BillsPage() {
                 categoryList.forEach((cate) => {
                     categoriesMap.set(cate.id, cate.categoryName);
                 });
+                setAllCategory(
+                    categoryList.map((c) => {
+                        return c.categoryName;
+                    }),
+                );
 
                 setCateFilters(
                     categoryList.map((cate) => ({
@@ -145,16 +203,19 @@ export default function BillsPage() {
                 <Space>
                     <Button
                         type="primary"
-                        onClick={() =>
-                            openEditModal({
-                                key: 0,
-                                id: 0,
-                                date: "",
-                                category: "",
-                                amount: 0,
-                                description: "",
-                            })
-                        }
+                        onClick={() => {
+                            openEditModal(
+                                {
+                                    key: 0,
+                                    id: 0,
+                                    date: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+                                    category: "",
+                                    amount: 0,
+                                    description: "",
+                                },
+                                false,
+                            );
+                        }}
                     >
                         添加账单
                     </Button>
@@ -167,6 +228,74 @@ export default function BillsPage() {
                     style={{ width: "90%", height: "100%" }}
                 />
             </Flex>
+            <Modal
+                title={editOrNew ? "编辑" : "新增"}
+                open={isModalOpen}
+                centered={true}
+                onCancel={closeEditModal}
+                onOk={handleSubmit}
+            >
+                <Flex vertical gap="middle">
+                    <Flex gap="middle">
+                        <Flex flex={1} align="center" justify="center">
+                            <Flex flex={3}>日期：</Flex>
+                            <DatePicker
+                                value={dayjs(updateData.date)}
+                                showTime={{ format: "HH:mm:ss" }}
+                                format="YYYY-MM-DD HH:mm:ss"
+                                onChange={(_, value) =>
+                                    handleUpdataDataChange(
+                                        "date",
+                                        value as string,
+                                    )
+                                }
+                                style={{ flex: 8 }}
+                            ></DatePicker>
+                        </Flex>
+                        <Flex flex={1} align="center" justify="center">
+                            <Flex flex={2}>类别：</Flex>
+                            <AutoComplete
+                                style={{ flex: 8 }}
+                                onChange={(value) =>
+                                    handleUpdataDataChange("category", value)
+                                }
+                                options={getOptions()}
+                                allowClear={true}
+                                backfill={true}
+                                value={updateData.category}
+                            />
+                        </Flex>
+                    </Flex>
+                    <Flex gap="middle">
+                        <Flex flex={1} align="center" justify="center">
+                            <Flex flex={3}>金额：</Flex>
+                            <InputNumber
+                                suffix="￥"
+                                value={updateData.amount}
+                                onChange={(value) =>
+                                    handleUpdataDataChange("amount", value)
+                                }
+                                precision={3}
+                                style={{ flex: 8 }}
+                            ></InputNumber>
+                        </Flex>
+                        <Flex flex={1} align="center" justify="center">
+                            <Flex flex={3}>备注：</Flex>
+                            <Input
+                                style={{ flex: 8 }}
+                                onChange={(element) =>
+                                    handleUpdataDataChange(
+                                        "description",
+                                        element.target.value,
+                                    )
+                                }
+                                allowClear={true}
+                                value={updateData.description}
+                            />
+                        </Flex>
+                    </Flex>
+                </Flex>
+            </Modal>
         </Flex>
     );
 }
