@@ -33,5 +33,9 @@ COPY nginx.conf.template /etc/nginx/conf.d/nginx.conf.template
 # 暴露端口
 EXPOSE 80
 
-# 启动命令：使用 envsubst 替换模板中的变量，生成最终配置，然后启动 nginx
-CMD sh -c "envsubst '$$BACKEND_HOST' < /etc/nginx/conf.d/nginx.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
+# # 启动命令：使用 envsubst 替换模板中的变量，生成最终配置，然后启动 nginx
+# CMD sh -c "envsubst '$$BACKEND_HOST' < /etc/nginx/conf.d/nginx.conf.template > /etc/nginx/conf.d/default.conf && rm /etc/nginx/conf.d/nginx.conf.template && nginx -g 'daemon off;'"
