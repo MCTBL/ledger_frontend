@@ -1,10 +1,7 @@
 server {
-    listen 80;
-    server_name localhost;
-
-    # 静态文件根目录（React 构建产物存放位置）
-    root /usr/share/nginx/html;
-    index index.html;
+    listen       80;
+    listen  [::]:80;
+    server_name  localhost;
 
     # 开启 gzip 压缩
     gzip on;
@@ -16,15 +13,10 @@ server {
     access_log /var/log/nginx/access.log;
     error_log /var/log/nginx/error.log;
 
-    # 处理静态资源缓存（可选，根据项目需求调整）
-    location ~* \.(?:ico|css|js|gif|jpe?g|png|woff2?|eot|ttf|svg|otf|webp)$ {
-        expires 6M;
-        add_header Cache-Control "public, immutable";
-    }
-
     # 所有前端路由都返回 index.html（支持 History 模式）
     location / {
-        try_files $uri $uri/ /index.html;
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
     }
 
     # 反向代理后端 API 请求
