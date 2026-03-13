@@ -10,6 +10,7 @@ import {
     Popconfirm,
     Space,
     Table,
+    Tooltip,
     type TableColumnsType,
 } from "antd";
 import dayjs from "dayjs";
@@ -26,6 +27,7 @@ import type {
 
 export default function BillsPage() {
     const [data, setData] = useState<billTableData[]>([]);
+    const [filteredData, setFilteredData] = useState<billTableData[]>([]);
     const [isFetched, setFetched] = useState(false);
     const [cateFilters, setCateFilters] = useState<
         { text: string; value: string }[]
@@ -35,6 +37,10 @@ export default function BillsPage() {
     const [allCategory, setAllCategory] = useState<string[]>([]);
     const [editOrNew, setEditOrNew] = useState<boolean>(false);
     const [messageApi, contextHolder] = message.useMessage();
+    const [filterRange, setFilterRange] = useState<(string | number)[]>([
+        "",
+        "",
+    ]);
 
     const columns: TableColumnsType<billTableData> = [
         {
@@ -133,7 +139,6 @@ export default function BillsPage() {
 
     const handleSubmit = (temp: SyntheticEvent) => {
         temp.nativeEvent.preventDefault();
-        console.log(updateData);
         if (updateData.amount === 0) {
             messageApi.open({
                 type: "error",
@@ -157,7 +162,6 @@ export default function BillsPage() {
                 billDate: updateData.date,
                 billDescription: updateData.description,
             } as Bill;
-            console.log(newBill);
 
             if (editOrNew) {
                 axios
@@ -241,7 +245,6 @@ export default function BillsPage() {
                     .data as getBillsData;
                 const categoryList: Category[] = data.categories;
                 const bills = data.bills;
-                console.log(bills);
 
                 const categoriesMap = new Map<number, string>();
                 categoryList.forEach((cate) => {
@@ -275,6 +278,21 @@ export default function BillsPage() {
             });
     }, [user, isFetched]);
 
+    useEffect(() => {
+        let newFilteredData = data;
+        if (filterRange[0] != null && (filterRange[0] as string).length != 0) {
+            newFilteredData = newFilteredData.filter(
+                (d) => d.amount >= Number(filterRange[0]),
+            );
+        }
+        if (filterRange[1] != null && (filterRange[1] as string).length != 0) {
+            newFilteredData = newFilteredData.filter(
+                (d) => d.amount <= Number(filterRange[1]),
+            );
+        }
+        setFilteredData(newFilteredData);
+    }, [data, filterRange]);
+
     return (
         <>
             {contextHolder}
@@ -303,11 +321,38 @@ export default function BillsPage() {
                             添加账单
                         </Button>
                     </Space>
+                    <Space>
+                        <Tooltip title="下限, 留空不限制">
+                            <InputNumber
+                                onChange={(value) => {
+                                    setFilterRange([
+                                        value as number,
+                                        filterRange[1],
+                                    ]);
+                                }}
+                                value={filterRange[0]}
+                            ></InputNumber>
+                        </Tooltip>
+                    </Space>
+                    <Space> ~ </Space>
+                    <Space>
+                        <Tooltip title="上限, 留空不限制">
+                            <InputNumber
+                                onChange={(value) => {
+                                    setFilterRange([
+                                        filterRange[0],
+                                        value as number,
+                                    ]);
+                                }}
+                                value={filterRange[1]}
+                            ></InputNumber>
+                        </Tooltip>
+                    </Space>
                 </Flex>
                 <Flex flex={15} justify="center">
                     <Table<billTableData>
                         columns={columns}
-                        dataSource={data}
+                        dataSource={filteredData}
                         style={{ width: "90%", height: "100%" }}
                     />
                 </Flex>
